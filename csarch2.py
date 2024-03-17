@@ -5,10 +5,13 @@ import re
 
 numbers = "-1.00111*2^5"
 
-def sign(sign):
-    if(sign == "+"):
+def sign(number):
+    if number[0] == "-":
+        return 1
+    else:
         return 0
-    return 1
+
+    
 
 
 def exponent(exponent):
@@ -23,18 +26,59 @@ def fraction(fraction):
 
 #def base():
 
+def normalizated_form_check(complete_form):
+    
+    if ((len(complete_form[0]) > 1 and complete_form[0][0] != "-") or (complete_form[0][0] == "-" and len(complete_form[0]) > 2 ) ):
+        return False
+    return True
+
+
+def normalize_form(complete_form):
+    
+    if (complete_form[0].find("1") == -1): # if left side of the dot is only 0s
+        return complete_form
+    else: #if there is 1 in the left side of the dot
+        ind = complete_form[0].find("1") + 1
+        count = len(complete_form[0]) - ind
+        for i in range(count):
+            last_char = complete_form[0][-1]
+            complete_form[0] = complete_form[0][:-1]
+            complete_form[2] = last_char + complete_form[2]
+            complete_form[6] = str(int(complete_form[6]) + 1)
+        
+        complete_form[0] = complete_form[0][0] + complete_form[0][1:].lstrip("0") if complete_form[0][0] == "-" else complete_form[0].lstrip("0")
+    return complete_form
+
+    
+
 
 def main():
    
-
+    result = {}
     split = re.split(r'(\.|\*|\^)', numbers)
+    print("Split ", split)
+    
+    if (normalizated_form_check(split) == False):
+        print("Number is not in normalized form")
+        normalize_form(split)
+        print("Number after normalize: ", split)
 
+    
     ex = exponent(int(split[-1]))
     frac = fraction(split[2])
-    print("fraction:" + frac)
-    print("exponent:" + ex)
-    print(str(split))
 
+    result["sign"] = sign(split[0])
+    result["exponent"] = ex
+    result["fraction"] = frac
+    result["complete"] = f'{result["sign"]}{result["exponent"]}{result["fraction"]}'
+    result["hex_complete"] = hex(int(result["complete"], 2))
+    #enumerate result
+    for key, value in result.items():
+        print(f'{key}: {value}')
+
+
+
+   
 
 
 main()
