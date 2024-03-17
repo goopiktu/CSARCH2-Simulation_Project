@@ -3,7 +3,7 @@ import re
 
 #print(f'{numbers}'.format(numbers=numbers))
 
-numbers = "-1.00111*2^5"
+numbers = "-01.00111*2^5"
 
 def sign(number):
     if number[0] == "-":
@@ -28,7 +28,7 @@ def fraction(fraction):
 
 def normalizated_form_check(complete_form):
     
-    if ((len(complete_form[0]) > 1 and complete_form[0][0] != "-") or (complete_form[0][0] == "-" and len(complete_form[0]) > 2 ) ):
+    if ((len(complete_form[0]) > 1 and complete_form[0][0] != "-") or (complete_form[0][0] == "-" and len(complete_form[0]) > 2 ) or complete_form[0].find("1") == -1):
         return False
     return True
 
@@ -36,7 +36,16 @@ def normalizated_form_check(complete_form):
 def normalize_form(complete_form):
     
     if (complete_form[0].find("1") == -1): # if left side of the dot is only 0s
-        return complete_form
+        first_one = complete_form[2].find("1")
+        count = len(complete_form[2]) - first_one
+        for i in range(count):
+            first_char = complete_form[2][0]
+            complete_form[2] = complete_form[2][1:]
+            complete_form[6] = str(int(complete_form[6]) - 1)
+            complete_form[0] = complete_form[0] + first_char
+        complete_form[0] = complete_form[0][0] + complete_form[0][1:].lstrip("0") if complete_form[0][0] == "-" else complete_form[0].lstrip("0")
+
+
     else: #if there is 1 in the left side of the dot
         ind = complete_form[0].find("1") + 1
         count = len(complete_form[0]) - ind
