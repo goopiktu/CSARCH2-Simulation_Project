@@ -3,7 +3,7 @@ import re
 
 #print(f'{numbers}'.format(numbers=numbers))
 
-#numbers = "-01.00111*2^5"
+#numbers = "-1.00111*2^5"
 
 def sign(number):
     if number[0] == "-":
@@ -81,6 +81,8 @@ def main(numbers):
     #enumerate result
     for key, value in result.items():
         print(f'{key}: {value}')
+
+    return hex(int(result["complete"], 2))
 
 
 

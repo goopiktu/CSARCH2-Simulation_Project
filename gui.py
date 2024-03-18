@@ -28,7 +28,7 @@ def equal():
     current = e.get()
     f = m.main(str(current))
     e.delete(0, END)
-    e.insert(0, str(current) + f)
+    e.insert(0, f)
 
 
 #definition of buttons
