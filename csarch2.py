@@ -82,7 +82,7 @@ def main(numbers):
     for key, value in result.items():
         print(f'{key}: {value}')
 
-    return hex(int(result["complete"], 2))
+    return result
 
 
 

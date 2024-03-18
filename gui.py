@@ -1,34 +1,33 @@
 from tkinter import *
 import csarch2 as m
-
+from tkinter import ttk
 
 root = Tk()
 root.title("IEEE Binary 128-bit")
 
-e = Entry(root, width=35, borderwidth=5)
-e.grid(row=0, column=0, columnspan=3, padx=10, pady=10)
+e = Text(root, width=35, height=10, borderwidth=5, wrap=WORD)
+e.grid(row=1, column=4, columnspan=3, rowspan=4, padx=10, pady=20)
+
+
 
 def button_click(number):
-    current = e.get()
-    e.delete(0, END)
-    e.insert(0, str(current) + str(number))
+    e.insert(END, str(number))
 
 def sign(sign):
-    current = e.get()
-    e.delete(0, END)
-    e.insert(0, str(current) + sign)
+    e.insert(END, str(sign))
 
 def clear():
-    e.delete(0, END)
+    e.delete(1.0, END)
     
 def add():
     return
 
 def equal():
-    current = e.get()
+    current = e.get(1.0, END)
     f = m.main(str(current))
-    e.delete(0, END)
-    e.insert(0, f)
+    formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
+    e.delete(1.0, END)
+    e.insert(1.0, formatted_result)
 
 
 #definition of buttons
