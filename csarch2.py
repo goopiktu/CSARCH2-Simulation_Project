@@ -3,16 +3,13 @@ import re
 
 #print(f'{numbers}'.format(numbers=numbers))
 
-numbers = "-01.00111*2^5"
+#numbers = "-01.00111*2^5"
 
 def sign(number):
     if number[0] == "-":
         return 1
     else:
         return 0
-
-    
-
 
 def exponent(exponent):
     e = exponent + 16383
@@ -61,7 +58,7 @@ def normalize_form(complete_form):
     
 
 
-def main():
+def main(numbers):
    
     result = {}
     split = re.split(r'(\.|\*|\^)', numbers)
@@ -90,5 +87,5 @@ def main():
    
 
 
-main()
+#main()
 
