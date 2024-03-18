@@ -69,14 +69,15 @@ button_6.grid(row=3,column=2)
 button_1.grid(row=4,column=0)
 button_2.grid(row=4,column=1)
 button_3.grid(row=4,column=2) 
-button_0.grid(row=4,column=0)
 
-button_positive.grid(row=5, column=0)
-button_negative.grid(row=5, column=1)
-button_multiplication.grid(row=5, column=2)
+button_0.grid(row=5,column=0)
 
-button_decimal.grid(row=6, column=0)
-button_equal.grid(row=6, column=1, columnspan=2)
+button_positive.grid(row=6, column=0)
+button_negative.grid(row=6, column=1)
+button_multiplication.grid(row=6, column=2)
+
+button_decimal.grid(row=7, column=0)
+button_equal.grid(row=7, column=1, columnspan=2)
 
 
 
