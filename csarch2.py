@@ -57,7 +57,6 @@ def normalize_form(complete_form):
 
     
 
-
 def main(numbers, inputInBinary=True):
    
     result = {}
@@ -83,11 +82,6 @@ def main(numbers, inputInBinary=True):
         print(f'{key}: {value}')
 
     return result
-
-
-
-   
-
 
 main(numbers)
 

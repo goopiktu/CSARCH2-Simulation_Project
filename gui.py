@@ -1,15 +1,53 @@
 from tkinter import *
-import csarch2 as m
-from tkinter import ttk
+import csarch2 as m  # Ensure this matches your actual module
 
 root = Tk()
-root.title("IEEE Binary 128-bit")
+root.title("IEEE-754 Binary-128 Floating Point Converter")
 
-e = Text(root, width=35, height=10, borderwidth=5, wrap=WORD)
-e.grid(row=1, column=4, columnspan=3, rowspan=4, padx=10, pady=20)
+# Main Frame for better organization and padding
+main_frame = Frame(root, padx=20, pady=20)
+main_frame.pack(padx=20, pady=20)
 
+# Frame for the title
+title_frame = Frame(main_frame)
+title_frame.grid(row=0, column=0, columnspan=4, sticky="ew")
+title_label = Label(title_frame, text="IEEE-754 Binary-128 Floating Point Converter", font=("Helvetica", 16))
+title_label.pack()
 
+# Frame for input
+input_frame = Frame(main_frame)
+input_frame.grid(row=1, column=0, columnspan=4, sticky="ew")
+e = Text(input_frame, width=48, height=4, font=("Helvetica", 12))
+e.pack(padx=5, pady=5)
 
+# Frame for buttons
+button_frame = Frame(main_frame)
+button_frame.grid(row=2, column=0, columnspan=4)
+
+# Definition and placement of buttons, adjusted for wider buttons
+buttons = [
+    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("Clear", 1, 3),
+    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("^", 2, 3),
+    ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("*", 3, 3),
+    ("0", 4, 0), (".", 4, 1), ("+", 4, 2), ("-", 4, 3),
+    ("=", 5, 0, 4)  # Equal button spans all columns
+]
+
+for text, row, col, *span in buttons:
+    action = lambda x=text: button_click(x) if x.isdigit() or x == "." else sign(x) if x in "+-*/^" else clear() if x == "Clear" else equal()
+    btn = Button(button_frame, width=10, text=text, command=action, font=("Helvetica", 12))
+    if span:
+        btn.grid(row=row, column=col, sticky="nsew", columnspan=span[0], padx=5, pady=5)
+    else:
+        btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+
+# Make the grid columns and rows expandable
+for x in range(4):
+    button_frame.columnconfigure(x, weight=1)
+for y in range(5):
+    button_frame.rowconfigure(y, weight=1)
+
+# Functions (ensure these match your actual module's functionality)
 def button_click(number):
     e.insert(END, str(number))
 
@@ -18,67 +56,12 @@ def sign(sign):
 
 def clear():
     e.delete(1.0, END)
-    
-def add():
-    return
 
 def equal():
     current = e.get(1.0, END)
-    f = m.main(str(current))
+    f = m.main(str(current))  # Ensure this call matches your module's functionality
     formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
     e.delete(1.0, END)
     e.insert(1.0, formatted_result)
-
-
-#definition of buttons
-button_1 = Button(root, text="1", padx=40, pady=20, command=lambda: button_click(1))
-button_2 = Button(root, text="2", padx=40, pady=20, command=lambda: button_click(2))
-button_3 = Button(root, text="3", padx=40, pady=20, command=lambda: button_click(3))
-button_4 = Button(root, text="4", padx=40, pady=20, command=lambda: button_click(4))
-button_5 = Button(root, text="5", padx=40, pady=20, command=lambda: button_click(5))
-button_6 = Button(root, text="6", padx=40, pady=20, command=lambda: button_click(6))
-button_7 = Button(root, text="7", padx=40, pady=20, command=lambda: button_click(7))
-button_8 = Button(root, text="8", padx=40, pady=20, command=lambda: button_click(8))
-button_9 = Button(root, text="9", padx=40, pady=20, command=lambda: button_click(9))
-button_0 = Button(root, text="0", padx=40, pady=20, command=lambda: button_click(0))
-
-button_positive = Button(root, text="+", padx=40, pady=20, command= lambda: sign("+"))
-button_negative = Button(root, text="-", padx=40, pady=20, command= lambda: sign("-"))
-
-button_multiplication = Button(root, text="*", padx=40, pady=20, command= lambda: sign("*"))
-button_superscript = Button(root, text="^", padx=40, pady=20, command= lambda: sign("^"))
-
-button_decimal = Button(root, text=".", padx=40, pady=20, command= lambda: sign("."))
-
-button_equal = Button(root, text="=", padx=90, pady=20, command=equal)
-button_clear = Button(root, text="Clear", padx=80, pady=20, command=clear)
-
-
-#adding the buttons to screen
-button_superscript.grid(row=1, column=2)
-button_clear.grid(row=1, column=0, columnspan=2)
-
-button_7.grid(row=2,column=0)
-button_8.grid(row=2,column=1)
-button_9.grid(row=2,column=2)
-
-button_4.grid(row=3,column=0)
-button_5.grid(row=3,column=1)
-button_6.grid(row=3,column=2)
-
-button_1.grid(row=4,column=0)
-button_2.grid(row=4,column=1)
-button_3.grid(row=4,column=2) 
-
-button_0.grid(row=5,column=0)
-
-button_positive.grid(row=6, column=0)
-button_negative.grid(row=6, column=1)
-button_multiplication.grid(row=6, column=2)
-
-button_decimal.grid(row=7, column=0)
-button_equal.grid(row=7, column=1, columnspan=2)
-
-
 
 root.mainloop()
