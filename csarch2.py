@@ -3,7 +3,7 @@ import re
 
 #print(f'{numbers}'.format(numbers=numbers))
 
-#numbers = "-1.00111*2^5"
+numbers = "0.00111*2^5"
 
 def sign(number):
     if number[0] == "-":
@@ -58,13 +58,13 @@ def normalize_form(complete_form):
     
 
 
-def main(numbers):
+def main(numbers, inputInBinary=True):
    
     result = {}
     split = re.split(r'(\.|\*|\^)', numbers)
     print("Split ", split)
     
-    if (normalizated_form_check(split) == False):
+    if (inputInBinary == True and normalizated_form_check(split) == False):
         print("Number is not in normalized form")
         normalize_form(split)
         print("Number after normalize: ", split)
@@ -89,5 +89,5 @@ def main(numbers):
    
 
 
-#main()
+main(numbers)
 
