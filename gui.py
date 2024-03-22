@@ -4,6 +4,34 @@ import csarch2 as m  # Ensure this matches your actual module
 root = Tk()
 root.title("IEEE-754 Binary-128 Floating Point Converter")
 
+my_menu = Menu(root)
+root.config(menu=my_menu)
+
+def output_astext():
+    current = e.get(1.0, END)
+    f = m.main(str(current))
+    formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
+
+    with open("output.txt", "w") as file:
+    
+        file.write(formatted_result)
+        
+    msg = "Output written to output.txt"
+    e.delete(1.0, END)
+    e.insert(1.0, msg)
+
+
+
+#Create a menu item
+file_menu = Menu(my_menu)
+my_menu.add_cascade(label="File output", menu=file_menu)
+file_menu.add_command(label="Output as Text", command=output_astext)
+
+file_menu.add_separator()
+file_menu.add_command(label="Exit", command=root.quit)
+
+
+
 # Main Frame for better organization and padding
 main_frame = Frame(root, padx=20, pady=20)
 main_frame.pack(padx=20, pady=20)
