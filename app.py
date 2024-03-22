@@ -70,7 +70,7 @@ decimal_buttons = [
 binary_buttons = [
     ("1", 1, 0), ("0", 1, 1), ("Clear", 1, 2), ("Backspace", 1, 3),
     ("^", 2, 0), ("-", 2, 1), ("*2", 2, 2), (".", 2, 3),
-    ("=", 3, 0)
+    ("i", 3, 0), ("=", 3, 1)
 ]
 
 # Make the grid columns and rows expandable
@@ -243,7 +243,7 @@ def decimal_to_binary(decimal_num):
         else:
             fractional_binary += "0"
     
-    exponent = len(integer_binary) - 1
+    exponent = 0 # len(integer_binary) - 1 # LOOK OVER HERE
     
     binary_num = f"{sign}{integer_binary}.{fractional_binary}*2^{exponent}"
     return binary_num
@@ -289,6 +289,8 @@ def main(numbers, inputInBinary=True):
     
     if not inputInBinary:
         numbers = decimal_to_binary(numbers)
+    
+    print("hi: ", numbers) # LOOK OVER HERE TEMPORARY
     
     split = re.split(r'(\.|\*|\^)', numbers)
     print("Split ", split)
