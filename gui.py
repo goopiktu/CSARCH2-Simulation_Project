@@ -8,7 +8,31 @@ root.title("IEEE Binary 128-bit")
 e = Text(root, width=35, height=10, borderwidth=5, wrap=WORD)
 e.grid(row=1, column=4, columnspan=3, rowspan=4, padx=10, pady=20)
 
+my_menu = Menu(root)
+root.config(menu=my_menu)
 
+def output_astext():
+    current = e.get(1.0, END)
+    f = m.main(str(current))
+    formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
+
+    with open("output.txt", "w") as file:
+    
+        file.write(formatted_result)
+        
+    msg = "Output written to output.txt"
+    e.delete(1.0, END)
+    e.insert(1.0, msg)
+
+
+
+#Create a menu item
+file_menu = Menu(my_menu)
+my_menu.add_cascade(label="File output", menu=file_menu)
+file_menu.add_command(label="Output as Text", command=output_astext)
+
+file_menu.add_separator()
+file_menu.add_command(label="Exit", command=root.quit)
 
 def button_click(number):
     e.insert(END, str(number))
