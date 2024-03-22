@@ -238,19 +238,35 @@ def main(numbers, inputInBinary=True):
     split = re.split(r'(\.|\*|\^)', numbers)
     print("Split ", split)
     
-    if (normalizated_form_check(split) == False):
-        print("Number is not in normalized form")
-        normalize_form(split)
-        print("Number after normalize: ", split)
+    # Check for special cases
+    if numbers == "7fff 0000 0000 0000 0000 0000 0000 000016":
+        result["special_case"] = "Positive Infinity"
+    elif numbers == "ffff 0000 0000 0000 0000 0000 0000 000016":
+        result["special_case"] = "Negative Infinity"
+    elif numbers.startswith("7fff") and "1" in numbers[4:]:
+        result["special_case"] = "Quiet NaN"
+    elif numbers.startswith("7fff") and "1" not in numbers[4:]:
+        result["special_case"] = "Signaling NaN"
+    elif numbers == "0000 0000 0000 0000 0000 0000 0000 000016":
+        result["special_case"] = "Positive Zero"
+    elif numbers == "8000 0000 0000 0000 0000 0000 0000 000016":
+        result["special_case"] = "Negative Zero"
+    elif split[-1] == "0" and "1" in split[2]:
+        result["special_case"] = "Subnormal Number"
+    else:
+        if (normalizated_form_check(split) == False):
+            print("Number is not in normalized form")
+            normalize_form(split)
+            print("Number after normalize: ", split)
 
-    ex = exponent(int(split[-1]))
-    frac = fraction(split[2])
+        ex = exponent(int(split[-1]))
+        frac = fraction(split[2])
 
-    result["sign"] = sign(split[0])
-    result["exponent"] = ex
-    result["fraction"] = frac
-    result["complete"] = f'{result["sign"]}{result["exponent"]}{result["fraction"]}'
-    result["hex_complete"] = hex(int(result["complete"], 2))
+        result["sign"] = sign(split[0])
+        result["exponent"] = ex
+        result["fraction"] = frac
+        result["complete"] = f'{result["sign"]}{result["exponent"]}{result["fraction"]}'
+        result["hex_complete"] = hex(int(result["complete"], 2))
 
     return result
 
