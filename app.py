@@ -107,15 +107,40 @@ def backspace():
     e.insert(1.0, current[:-2])
     e.configure(state="disabled")
 
+import re  # Ensure re is imported at the top of your script
+
 def equal():
-    current = e.get(1.0, END).strip()
+    raw_current = e.get(1.0, END).strip()  # Get the raw, trimmed input
+    current = raw_current
+
+    # Use regular expressions to check for multiple zeros or negative zeros
+    if re.match(r'^0+$', raw_current):  # Matches any non-negative zero input, e.g., "0", "000"
+        special_case = "Positive Zero"
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, special_case)
+        output_text.configure(state="disabled")
+        return
+    elif re.match(r'^-0*$', raw_current):  # Matches any negative zero input, e.g., "-0", "-000"
+        special_case = "Negative Zero"
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, special_case)
+        output_text.configure(state="disabled")
+        return
+
+    # Normalize the input based on its mode for further processing
     if mode.get() == "decimal":
         current = decimal_to_binary(current)
     else:
         current = process_binary_input(current)
+
     try:
         f = main(str(current))
-        formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
+        if "special_case" in f:
+            formatted_result = f["special_case"]
+        else:
+            formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
         output_text.configure(state="normal")
         output_text.delete(1.0, END)
         output_text.insert(1.0, formatted_result)
@@ -124,8 +149,8 @@ def equal():
         output_text.configure(state="normal")
         output_text.delete(1.0, END)
         output_text.insert(1.0, f"Error: {str(ex)}")
-        output_text.configure(state="disabled")
-    
+        output_text.configure(state="disabled")    
+        
 #End of GUI
 
 # IEEE-754 Binary-128 Floating Point Converter Code
@@ -229,6 +254,28 @@ def process_binary_input(binary_num):
             binary_num = binary_num.replace("*", ".0*")
     return binary_num
 
+def is_special_case(numbers):
+    if numbers == "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000":
+        return "Positive Zero"
+    elif numbers == "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000":
+        return "Negative Zero"
+    elif numbers.startswith("7FFF"):
+        if numbers[4:] == "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000":
+            return "Positive Infinity"
+        elif numbers[4] == "1":
+            return "Quiet NaN"
+        else:
+            return "Signaling NaN"
+    elif numbers.startswith("FFFF"):
+        if numbers[4:] == "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000":
+            return "Negative Infinity"
+        elif numbers[4] == "1":
+            return "Quiet NaN"
+        else:
+            return "Signaling NaN"
+    else:
+        return None
+
 def main(numbers, inputInBinary=True):
     result = {}
     
@@ -238,21 +285,25 @@ def main(numbers, inputInBinary=True):
     split = re.split(r'(\.|\*|\^)', numbers)
     print("Split ", split)
     
-    if (normalizated_form_check(split) == False):
-        print("Number is not in normalized form")
-        normalize_form(split)
-        print("Number after normalize: ", split)
+    special_case = is_special_case(numbers.replace(".", "").replace("*", "").replace("^", "").replace("-", ""))
+    if special_case:
+        result["special_case"] = special_case
+    else:
+        if (normalizated_form_check(split) == False):
+            print("Number is not in normalized form")
+            normalize_form(split)
+            print("Number after normalize: ", split)
 
-    ex = exponent(int(split[-1]))
-    frac = fraction(split[2])
+        ex = exponent(int(split[-1]))
+        frac = fraction(split[2])
 
-    result["sign"] = sign(split[0])
-    result["exponent"] = ex
-    result["fraction"] = frac
-    result["complete"] = f'{result["sign"]}{result["exponent"]}{result["fraction"]}'
-    result["hex_complete"] = hex(int(result["complete"], 2))
+        result["sign"] = sign(split[0])
+        result["exponent"] = ex
+        result["fraction"] = frac
+        result["complete"] = f'{result["sign"]}{result["exponent"]}{result["fraction"]}'
+        result["hex_complete"] = hex(int(result["complete"], 2))
 
     return result
 
 update_buttons()
-root.mainloop()
+root.mainloop()    
