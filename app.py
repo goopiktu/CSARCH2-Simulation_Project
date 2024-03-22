@@ -1,7 +1,7 @@
 from tkinter import *
 import re
 
-# Start of GUI
+#Start of GUI
 root = Tk()
 root.title("IEEE-754 Binary-128 Floating Point Converter")
 
@@ -9,74 +9,124 @@ root.title("IEEE-754 Binary-128 Floating Point Converter")
 main_frame = Frame(root, padx=20, pady=20)
 main_frame.pack(padx=20, pady=20)
 
+def update_buttons():
+    for widget in button_frame.winfo_children():
+        widget.destroy()
+
+    if mode.get() == "decimal":
+        for text, row, col in decimal_buttons:
+            action = lambda x=text: button_click(x)
+            btn = Button(button_frame, width=10, text=text, command=action, font=("Helvetica", 12))
+            btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+    else:
+        for text, row, col in binary_buttons:
+            action = lambda x=text: button_click(x)
+            btn = Button(button_frame, width=10, text=text, command=action, font=("Helvetica", 12))
+            btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+
 # Frame for the title
 title_frame = Frame(main_frame)
 title_frame.grid(row=0, column=0, columnspan=4, sticky="ew")
 title_label = Label(title_frame, text="IEEE-754 Binary-128 Floating Point Converter", font=("Helvetica", 16))
 title_label.pack()
 
+# Frame for input mode selection
+mode_frame = Frame(main_frame)
+mode_frame.grid(row=1, column=0, columnspan=4, sticky="ew")
+mode = StringVar(value="decimal")
+decimal_button = Radiobutton(mode_frame, text="Decimal Input", variable=mode, value="decimal", command=update_buttons)
+decimal_button.pack(side=LEFT)
+binary_button = Radiobutton(mode_frame, text="Binary Input", variable=mode, value="binary", command=update_buttons)
+binary_button.pack(side=LEFT)
+
 # Frame for input
 input_frame = Frame(main_frame)
-input_frame.grid(row=1, column=0, columnspan=4, sticky="ew")
+input_frame.grid(row=2, column=0, columnspan=4, sticky="ew")
 input_label = Label(input_frame, text="Input Window", font=("Helvetica", 12))
 input_label.pack()
-e = Text(input_frame, width=48, height=4, font=("Helvetica", 12))
+e = Text(input_frame, width=128, height=4, font=("Helvetica", 12), state="disabled")
 e.pack(padx=5, pady=5)
 
 # Frame for output
 output_frame = Frame(main_frame)
-output_frame.grid(row=2, column=0, columnspan=4, sticky="ew")
+output_frame.grid(row=3, column=0, columnspan=4, sticky="ew")
 output_label = Label(output_frame, text="Output Window", font=("Helvetica", 12))
 output_label.pack()
-output_text = Text(output_frame, width=48, height=8, font=("Helvetica", 12))
+output_text = Text(output_frame, width=128, height=8, font=("Helvetica", 12), state="disabled")
 output_text.pack(padx=5, pady=5)
 
 # Frame for buttons
 button_frame = Frame(main_frame)
-button_frame.grid(row=3, column=0, columnspan=4)
+button_frame.grid(row=4, column=0, columnspan=4)
 
-# Definition and placement of buttons, adjusted for wider buttons
-buttons = [
-    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("Clear", 1, 3),
-    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("^", 2, 3),
-    ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("*", 3, 3),
-    ("0", 4, 0), (".", 4, 1), ("+", 4, 2), ("-", 4, 3),
-    ("=", 5, 0, 4)  # Equal button spans all columns
+# Definition and placement of buttons
+decimal_buttons = [
+    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("Clear", 1, 3), ("Backspace", 1, 4),
+    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("^", 2, 3), ("*", 2, 4),
+    ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
+    ("0", 4, 0), (".", 4, 1), ("=", 4, 2)
 ]
 
-for text, row, col, *span in buttons:
-    action = lambda x=text: button_click(x) if x.isdigit() or x == "." else sign_button(x) if x in "+-*/^" else clear() if x == "Clear" else equal()
-    btn = Button(button_frame, width=10, text=text, command=action, font=("Helvetica", 12))
-    if span:
-        btn.grid(row=row, column=col, sticky="nsew", columnspan=span[0], padx=5, pady=5)
-    else:
-        btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+binary_buttons = [
+    ("1", 1, 0), ("0", 1, 1), ("Clear", 1, 2), ("Backspace", 1, 3),
+    ("^", 2, 0), ("-", 2, 1), ("*2", 2, 2), (".", 2, 3),
+    ("=", 3, 0)
+]
 
 # Make the grid columns and rows expandable
-for x in range(4):
+for x in range(5):
     button_frame.columnconfigure(x, weight=1)
-for y in range(5):
+for y in range(4):
     button_frame.rowconfigure(y, weight=1)
 
 # Functions
-def button_click(number):
-    e.insert(END, str(number))
-
-def sign_button(sign):
-    e.insert(END, str(sign))
+def button_click(text):
+    if text == "Clear":
+        clear()
+    elif text == "Backspace":
+        backspace()
+    elif text == "=":
+        equal()
+    else:
+        e.configure(state="normal")
+        e.insert(END, str(text))
+        e.configure(state="disabled")
 
 def clear():
+    e.configure(state="normal")
     e.delete(1.0, END)
+    e.configure(state="disabled")
+    output_text.configure(state="normal")
     output_text.delete(1.0, END)
+    output_text.configure(state="disabled")
+
+def backspace():
+    e.configure(state="normal")
+    current = e.get(1.0, END)
+    e.delete(1.0, END)
+    e.insert(1.0, current[:-2])
+    e.configure(state="disabled")
 
 def equal():
     current = e.get(1.0, END).strip()
-    f = main(str(current))
-    formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
-    output_text.delete(1.0, END)
-    output_text.insert(1.0, formatted_result)
-# End of GUI
-
+    if mode.get() == "decimal":
+        current = decimal_to_binary(current)
+    else:
+        current = process_binary_input(current)
+    try:
+        f = main(str(current))
+        formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, formatted_result)
+        output_text.configure(state="disabled")
+    except Exception as ex:
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, f"Error: {str(ex)}")
+        output_text.configure(state="disabled")
+    
+#End of GUI
 
 # IEEE-754 Binary-128 Floating Point Converter Code
 def sign(number):
@@ -100,6 +150,9 @@ def normalizated_form_check(complete_form):
     return True
 
 def normalize_form(complete_form):
+    if len(complete_form) < 7:
+        complete_form.append("0")
+
     if (complete_form[0].find("1") == -1): # if left side of the dot is only 0s
         first_one = complete_form[2].find("1")
         count = len(complete_form[2]) - first_one
@@ -123,6 +176,20 @@ def normalize_form(complete_form):
     return complete_form
 
 def decimal_to_binary(decimal_num):
+    # Handle different formats of decimal input
+    if "*" in decimal_num:
+        base, exponent = decimal_num.split("*")
+        base = float(base)
+        exponent = int(exponent.split("^")[-1])
+        decimal_num = base * (10 ** exponent)
+    elif "x" in decimal_num:
+        base, exponent = decimal_num.split("x")
+        base = float(base)
+        exponent = int(exponent.split("^")[-1])
+        decimal_num = base * (10 ** exponent)
+    else:
+        decimal_num = float(decimal_num)
+
     if decimal_num == 0:
         return "0.0*2^0"
     
@@ -148,11 +215,22 @@ def decimal_to_binary(decimal_num):
     binary_num = f"{sign}{integer_binary}.{fractional_binary}*2^{exponent}"
     return binary_num
 
+def process_binary_input(binary_num):
+    # Handle different formats of binary input
+    if "*" not in binary_num:
+        if "." not in binary_num:
+            binary_num += "*2^0"
+        else:
+            integer_part, fractional_part = binary_num.split(".")
+            exponent = len(integer_part) - 1
+            binary_num = f"{integer_part}.{fractional_part}*2^{exponent}"
+    return binary_num
+
 def main(numbers, inputInBinary=True):
     result = {}
     
     if not inputInBinary:
-        numbers = decimal_to_binary(float(numbers))
+        numbers = decimal_to_binary(numbers)
     
     split = re.split(r'(\.|\*|\^)', numbers)
     print("Split ", split)
@@ -173,6 +251,5 @@ def main(numbers, inputInBinary=True):
 
     return result
 
+update_buttons()
 root.mainloop()
-
-# End of Converter Code
