@@ -64,7 +64,7 @@ decimal_buttons = [
     ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("Clear", 1, 3), ("Backspace", 1, 4),
     ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("^", 2, 3), ("*", 2, 4),
     ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
-    ("0", 4, 0), (".", 4, 1), ("=", 4, 2)
+    ("i", 4, 0), ("0", 4, 1), (".", 4, 2), ("=", 4, 3)
 ]
 
 binary_buttons = [
@@ -129,6 +129,14 @@ def equal():
         output_text.configure(state="disabled")
         return
 
+    elif re.match(r'i', raw_current):  # Matches any imaginary number input
+        special_case = "NaN"
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, special_case)
+        output_text.configure(state="disabled")
+        return
+    
     # Normalize the input based on its mode for further processing
     if mode.get() == "decimal":
         current = decimal_to_binary(current)
