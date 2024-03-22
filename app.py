@@ -219,11 +219,14 @@ def process_binary_input(binary_num):
     # Handle different formats of binary input
     if "*" not in binary_num:
         if "." not in binary_num:
-            binary_num += "*2^0"
+            binary_num += ".0*2^0"
         else:
             integer_part, fractional_part = binary_num.split(".")
             exponent = len(integer_part) - 1
             binary_num = f"{integer_part}.{fractional_part}*2^{exponent}"
+    else:
+        if "." not in binary_num:
+            binary_num = binary_num.replace("*", ".0*")
     return binary_num
 
 def main(numbers, inputInBinary=True):
