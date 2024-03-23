@@ -145,7 +145,7 @@ def backspace():
 def equal():
     raw_current = e.get(1.0, END).strip()  # Get the raw, trimmed input
     current = raw_current
-
+    binaryInput = False
     # Use regular expressions to check for multiple zeros or negative zeros
     if re.match(r'^0+$', raw_current):  # Matches any non-negative zero input, e.g., "0", "000"
         special_case = "Positive Zero"
@@ -173,14 +173,15 @@ def equal():
     if mode.get() == "decimal":
         current = decimal_to_binary(current)
     else:
+        binaryInput = True
         current = process_binary_input(current)
 
     try:
-        f = main(str(current))
+        f = main(str(current), binaryInput)
         if "special_case" in f:
             formatted_result = f["special_case"]
         else:
-            formatted_result = '\n'.join([f"{key}: {value}" for key, value in f.items()])
+            formatted_result = ''.join(f["complete"] if binaryInput else f["hex_complete"])
         output_text.configure(state="normal")
         output_text.delete(1.0, END)
         output_text.insert(1.0, formatted_result)
@@ -389,10 +390,12 @@ def main(numbers, inputInBinary=True):
         ex = exponent(int(split[-1]))
         frac = fraction(split[2])
 
+
+
         result["sign"] = sign(split[0])
         result["exponent"] = ex
         result["fraction"] = frac
-        result["complete"] = f'{result["sign"]}{result["exponent"]} {result["fraction"]}'
+        result["complete"] = f'{result["sign"]} {result["exponent"]} {result["fraction"]}'
 
 
         result["hex_complete"] = hex(int(result["complete"].replace(" ", ""), 2))
@@ -405,9 +408,9 @@ def main(numbers, inputInBinary=True):
             empty_string += str(hex(int(tempVar[i:i+4], 2)).replace("0x", ""))
 
 
-        result["hex_complete"] = empty_string
+        result["hex_complete"] = "0x" + empty_string.upper()
 
     return result
 
 update_buttons()
-root.mainloop()    
+root.mainloop()
