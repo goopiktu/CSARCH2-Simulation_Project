@@ -1,7 +1,7 @@
 from tkinter import *
 import re
 
-#Start of GUI
+# Start of GUI
 root = Tk()
 root.title("IEEE-754 Binary-128 Floating Point Converter")
 
@@ -23,6 +23,9 @@ def update_buttons():
             action = lambda x=text: button_click(x)
             btn = Button(button_frame, width=10, text=text, command=action, font=("Helvetica", 12))
             btn.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+
+    # Clear input and output windows when switching input modes
+    clear()
 
 # Frame for the title
 title_frame = Frame(main_frame)
@@ -68,9 +71,10 @@ decimal_buttons = [
 ]
 
 binary_buttons = [
-    ("1", 1, 0), ("0", 1, 1), ("Clear", 1, 2), ("Backspace", 1, 3),
-    ("^", 2, 0), ("-", 2, 1), ("*2", 2, 2), (".", 2, 3),
-    ("i", 3, 0), ("=", 3, 1)
+    ("7", 1, 0), ("8", 1, 1), ("9", 1, 2), ("Clear", 1, 3), ("Backspace", 1, 4),
+    ("4", 2, 0), ("5", 2, 1), ("6", 2, 2), ("^", 2, 3), ("*", 2, 4),
+    ("1", 3, 0), ("2", 3, 1), ("3", 3, 2), ("-", 3, 3),
+    ("i", 4, 0), ("0", 4, 1), (".", 4, 2), ("=", 4, 3)
 ]
 
 # Make the grid columns and rows expandable
@@ -79,7 +83,10 @@ for x in range(5):
 for y in range(4):
     button_frame.rowconfigure(y, weight=1)
 
+# End of GUI
+
 # Functions
+
 def button_click(text):
     if text == "Clear":
         clear()
@@ -107,8 +114,6 @@ def backspace():
     e.insert(1.0, current[:-2])
     e.configure(state="disabled")
 
-import re  # Ensure re is imported at the top of your script
-
 def equal():
     raw_current = e.get(1.0, END).strip()  # Get the raw, trimmed input
     current = raw_current
@@ -128,7 +133,6 @@ def equal():
         output_text.insert(1.0, special_case)
         output_text.configure(state="disabled")
         return
-
     elif re.match(r'i', raw_current):  # Matches any imaginary number input
         special_case = "NaN"
         output_text.configure(state="normal")
@@ -157,11 +161,10 @@ def equal():
         output_text.configure(state="normal")
         output_text.delete(1.0, END)
         output_text.insert(1.0, f"Error: {str(ex)}")
-        output_text.configure(state="disabled")    
-        
-#End of GUI
+        output_text.configure(state="disabled")
 
 # IEEE-754 Binary-128 Floating Point Converter Code
+
 def sign(number):
     if number[0] == "-":
         return 1
