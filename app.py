@@ -327,6 +327,7 @@ def decimal_to_binary(decimal_num):
     exponent = 0 # len(integer_binary) - 1 # LOOK OVER HERE
     
     binary_num = f"{sign}{integer_binary}.{fractional_binary}*2^{exponent}"
+    print("binary num: ", binary_num)
     return binary_num
 
 def process_binary_input(binary_num):
@@ -368,8 +369,8 @@ def is_special_case(numbers):
 def main(numbers, inputInBinary=True):
     result = {}
     
-    if not inputInBinary:
-        numbers = decimal_to_binary(numbers)
+    # if not inputInBinary:
+    #     numbers = decimal_to_binary(numbers)
     
     print("hi: ", numbers) # LOOK OVER HERE TEMPORARY
     
@@ -391,8 +392,20 @@ def main(numbers, inputInBinary=True):
         result["sign"] = sign(split[0])
         result["exponent"] = ex
         result["fraction"] = frac
-        result["complete"] = f'{result["sign"]} {result["exponent"]} {result["fraction"]}'
+        result["complete"] = f'{result["sign"]}{result["exponent"]} {result["fraction"]}'
+
+
         result["hex_complete"] = hex(int(result["complete"].replace(" ", ""), 2))
+        tempVar = result["complete"].replace(" ", "")
+        empty_string = ""
+        for i in range(0, len(result["complete"]), 4):
+
+            if len(tempVar[i:i+4]) < 4:
+                tempVar = tempVar.ljust(len(tempVar) + (4 - len(tempVar)%4), "0")
+            empty_string += str(hex(int(tempVar[i:i+4], 2)).replace("0x", ""))
+
+
+        result["hex_complete"] = empty_string
 
     return result
 
