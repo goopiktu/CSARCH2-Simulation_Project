@@ -196,14 +196,14 @@ def equal():
 # IEEE-754 Binary-128 Floating Point Converter Code
 
 def sign(number):
-    if number[0] == "-":
-        return 1
-    else:
+    if not number or number[0] != "-":
         return 0
+    else:
+        return 1
 
 def exponent(exponent):
-    e = exponent + 16383
-    e = bin(e).replace("b","").replace("0","",1)
+    e = int(exponent) + 16383
+    e = bin(e)[2:].zfill(15)
     return e
 
 def fraction(fraction):
