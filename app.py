@@ -221,7 +221,7 @@ def equal():
         if "special_case" in f:
             formatted_result = f["special_case"]
         else:
-            formatted_result = ''.join(f["complete"] if binaryInput else f["hex_complete"])
+            formatted_result = ''.join(f["complete"] + "\n" + f["hex_complete"])
         output_text.configure(state="normal")
         output_text.delete(1.0, END)
         output_text.insert(1.0, formatted_result)
@@ -344,7 +344,7 @@ def decimal_to_binary(decimal_num):
         sign = ""       
             
     
-    integer_part = int(result["integer_part"])     #int(decimal_num)
+    integer_part = int(result["integer_part"].replace("-", ""))    #int(decimal_num)
     fractional_part = result["fractional_part"]    #fractional_part = decimal_num - integer_part
     
     print("decimal num abs: ", decimal_num, "int: ", integer_part, "frac: ", fractional_part)
@@ -450,7 +450,8 @@ def main(numbers, inputInBinary=True):
         tempVar = result["complete"].replace(" ", "")
         empty_string = ""
         for i in range(0, len(result["complete"]), 4):
-
+            if len(empty_string) >= 32:
+                break
             if len(tempVar[i:i+4]) < 4:
                 tempVar = tempVar.ljust(len(tempVar) + (4 - len(tempVar)%4), "0")
             empty_string += str(hex(int(tempVar[i:i+4], 2)).replace("0x", ""))
