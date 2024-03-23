@@ -168,8 +168,48 @@ def equal():
         output_text.insert(1.0, special_case)
         output_text.configure(state="disabled")
         return
-    
-    # Normalize the input based on its mode for further processing
+
+
+
+    if current.count(".") > 1 or current.count("*") > 1 or current.count("^") > 1:
+        noError = False
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, "Error: Invalid input")
+        output_text.configure(state="disabled")
+        toggle_save_button()
+        return
+
+    if current.count("-") > 1 or current.count("i") > 1:
+        noError = False
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, "Error: Invalid input")
+        output_text.configure(state="disabled")
+        toggle_save_button()
+        return
+
+    if mode.get() == "binary" and "*" in current and "^" in current and current.split("*")[1].split("^")[0] != "2":
+        noError = False
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, "Error: Invalid input")
+        output_text.configure(state="disabled")
+        toggle_save_button()
+        return
+
+    if mode.get() == "decimal" and "*" in current and "^" in current and current.split("*")[1].split("^")[0] != "10":
+        noError = False
+        output_text.configure(state="normal")
+        output_text.delete(1.0, END)
+        output_text.insert(1.0, "Error: Invalid input")
+        output_text.configure(state="disabled")
+        toggle_save_button()
+        return
+
+
+
+
     if mode.get() == "decimal":
         current = decimal_to_binary(current)
     else:
@@ -250,10 +290,15 @@ def times_10_raise_to_n(num, exp):
         fractional_part = "0"
     else:         
         integer_part, fractional_part = num.split(".")
+        print("int: ", integer_part, "frac: ", fractional_part)
         for i in range(exp):
-            first_digit = fractional_part[0]
+
+            print("int: ", integer_part, "frac: ", fractional_part)
+            first_digit = str(fractional_part)[0]
             integer_part += first_digit
             fractional_part = fractional_part[1:]
+            if len(fractional_part) == 0:
+                fractional_part = "0"
         
     result["integer_part"] = integer_part
     result["fractional_part"] = fractional_part
@@ -266,11 +311,14 @@ def times_10_raise_to_n(num, exp):
 def decimal_to_binary(decimal_num):
     # Handle different formats of decimal input
     result = {}
+    print("decimal num: ", decimal_num)
 
     if "*" in decimal_num:
         base, exponent = decimal_num.split("*")
         # base = float(base)
+        print("base: ", base, "exp: ", exponent)
         exponent = int(exponent.split("^")[-1])
+        print("exponent: ", exponent)
         result = times_10_raise_to_n(base, exponent)
         print("result inside: ", result)
         decimal_num = result["complete"] #base * (10 ** exponent)
