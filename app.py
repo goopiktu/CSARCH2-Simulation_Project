@@ -288,7 +288,7 @@ def process_binary_input(binary_num):
             binary_num += ".0*2^0"
         else:
             integer_part, fractional_part = binary_num.split(".")
-            exponent = len(integer_part) - 1
+            exponent = 0 #len(integer_part) - 1             #LOOK OVER HERE
             binary_num = f"{integer_part}.{fractional_part}*2^{exponent}"
     else:
         if "." not in binary_num:
