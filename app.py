@@ -196,14 +196,14 @@ def equal():
 # IEEE-754 Binary-128 Floating Point Converter Code
 
 def sign(number):
-    if number[0] == "-":
-        return 1
-    else:
+    if not number or number[0] != "-":
         return 0
+    else:
+        return 1
 
 def exponent(exponent):
-    e = exponent + 16383
-    e = bin(e).replace("b","").replace("0","",1)
+    e = int(exponent) + 16383
+    e = bin(e)[2:].zfill(15)
     return e
 
 def fraction(fraction):
@@ -219,26 +219,25 @@ def normalize_form(complete_form):
     if len(complete_form) < 7:
         complete_form.append("0")
 
-    if (complete_form[0].find("1") == -1): # if left side of the dot is only 0s
+    first_one = complete_form[0].find("1")
+    if first_one == -1:
         first_one = complete_form[2].find("1")
-        count = len(complete_form[2]) - first_one
-        for i in range(count):
-            first_char = complete_form[2][0]
-            complete_form[2] = complete_form[2][1:]
-            complete_form[6] = str(int(complete_form[6]) - 1)
-            complete_form[0] = complete_form[0] + first_char
-        complete_form[0] = complete_form[0][0] + complete_form[0][1:].lstrip("0") if complete_form[0][0] == "-" else complete_form[0].lstrip("0")
+        if first_one != -1:
+            count = len(complete_form[2][:first_one])
+            complete_form[0] = "1"
+            complete_form[2] = complete_form[2][first_one + 1:]
+            complete_form[6] = str(int(complete_form[6]) - count)
+        else:
+            complete_form[0] = "0"
+            complete_form[2] = ""
+            complete_form[6] = "0"
+    else:
+        if first_one != 0:
+            count = first_one
+            complete_form[2] = complete_form[0][first_one + 1:] + complete_form[2]
+            complete_form[0] = complete_form[0][:first_one + 1]
+            complete_form[6] = str(int(complete_form[6]) + count)
 
-    else: #if there is 1 in the left side of the dot
-        ind = complete_form[0].find("1") + 1
-        count = len(complete_form[0]) - ind
-        for i in range(count):
-            last_char = complete_form[0][-1]
-            complete_form[0] = complete_form[0][:-1]
-            complete_form[2] = last_char + complete_form[2]
-            complete_form[6] = str(int(complete_form[6]) + 1)
-        
-        complete_form[0] = complete_form[0][0] + complete_form[0][1:].lstrip("0") if complete_form[0][0] == "-" else complete_form[0].lstrip("0")
     return complete_form
 
 def decimal_to_binary(decimal_num):
@@ -268,15 +267,26 @@ def decimal_to_binary(decimal_num):
     integer_binary = bin(integer_part).replace("0b", "")
     
     fractional_binary = ""
-    while fractional_part != 0:
-        fractional_part *= 2
-        if fractional_part >= 1:
-            fractional_binary += "1"
-            fractional_part -= 1
-        else:
-            fractional_binary += "0"
+    exponent = 0
     
-    exponent = 0 # len(integer_binary) - 1 # LOOK OVER HERE
+    if integer_part == 0:
+        while fractional_part != 0:
+            fractional_part *= 2
+            if fractional_part >= 1:
+                fractional_binary += "1"
+                fractional_part -= 1
+            else:
+                fractional_binary += "0"
+            exponent -= 1
+    else:
+        while fractional_part != 0:
+            fractional_part *= 2
+            if fractional_part >= 1:
+                fractional_binary += "1"
+                fractional_part -= 1
+            else:
+                fractional_binary += "0"
+        exponent = len(integer_binary) - 1
     
     binary_num = f"{sign}{integer_binary}.{fractional_binary}*2^{exponent}"
     return binary_num
@@ -323,10 +333,10 @@ def main(numbers, inputInBinary=True):
     if not inputInBinary:
         numbers = decimal_to_binary(numbers)
     
-    print("hi: ", numbers) # LOOK OVER HERE TEMPORARY
+    print("Binary representation:", numbers)
     
     split = re.split(r'(\.|\*|\^)', numbers)
-    print("Split ", split)
+    print("Split:", split)
     
     special_case = is_special_case(numbers.replace(".", "").replace("*", "").replace("^", "").replace("-", ""))
     if special_case:
@@ -338,7 +348,7 @@ def main(numbers, inputInBinary=True):
             print("Number after normalize: ", split)
 
         ex = exponent(int(split[-1]))
-        frac = fraction(split[2])
+        frac = fraction(split[2].ljust(112, "0"))
 
         result["sign"] = sign(split[0])
         result["exponent"] = ex
