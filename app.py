@@ -240,40 +240,89 @@ def normalize_form(complete_form):
         complete_form[0] = complete_form[0][0] + complete_form[0][1:].lstrip("0") if complete_form[0][0] == "-" else complete_form[0].lstrip("0")
     return complete_form
 
+def times_10_raise_to_n(num, exp):
+    result = {}
+    if "." not in num:
+        for i in range(exp):
+            num += "0"
+        integer_part = num
+        fractional_part = "0"
+    else:         
+        integer_part, fractional_part = num.split(".")
+        for i in range(exp):
+            first_digit = fractional_part[0]
+            integer_part += first_digit
+            fractional_part = fractional_part[1:]
+        
+    result["integer_part"] = integer_part
+    result["fractional_part"] = fractional_part
+    result["complete"] = integer_part + "." + fractional_part
+    print("int: ", integer_part, "frac: ", fractional_part, "complete: ",  result["complete"])
+    print("result: ", result)
+
+    return result
+
 def decimal_to_binary(decimal_num):
     # Handle different formats of decimal input
+    result = {}
+
     if "*" in decimal_num:
         base, exponent = decimal_num.split("*")
-        base = float(base)
+        # base = float(base)
         exponent = int(exponent.split("^")[-1])
-        decimal_num = base * (10 ** exponent)
-    elif "x" in decimal_num:
-        base, exponent = decimal_num.split("x")
-        base = float(base)
-        exponent = int(exponent.split("^")[-1])
-        decimal_num = base * (10 ** exponent)
+        result = times_10_raise_to_n(base, exponent)
+        print("result inside: ", result)
+        decimal_num = result["complete"] #base * (10 ** exponent)
+    # elif "x" in decimal_num:
+    #     base, exponent = decimal_num.split("x")
+    #     base = float(base)
+    #     exponent = int(exponent.split("^")[-1])
+    #     decimal_num = base * (10 ** exponent)
     else:
-        decimal_num = float(decimal_num)
+        result = times_10_raise_to_n(decimal_num, 0)      #float(decimal_num)
+        print("result inside: ", result)
+        decimal_num = result["complete"]
 
     if decimal_num == 0:
         return "0.0*2^0"
     
-    sign = "-" if decimal_num < 0 else ""
-    decimal_num = abs(decimal_num)
+    # sign = "-" if decimal_num < 0 else ""
+    # decimal_num = abs(decimal_num)
+    if "-" in decimal_num:
+        sign = "-" 
+        decimal_num = decimal_num[1:]
+    else:
+        sign = ""       
+            
     
-    integer_part = int(decimal_num)
-    fractional_part = decimal_num - integer_part
+    integer_part = int(result["integer_part"])     #int(decimal_num)
+    fractional_part = result["fractional_part"]    #fractional_part = decimal_num - integer_part
     
+    print("decimal num abs: ", decimal_num, "int: ", integer_part, "frac: ", fractional_part)
+
     integer_binary = bin(integer_part).replace("0b", "")
     
     fractional_binary = ""
-    while fractional_part != 0:
-        fractional_part *= 2
-        if fractional_part >= 1:
+    fractional_part_int = int(fractional_part)
+
+    i=0
+    while (fractional_part_int != 0 and i <= 127):
+        fraction_len = len(str(fractional_part_int))
+        fraction_1 = 10 ** fraction_len
+        fractional_part_int *= 2
+        if fractional_part_int >= fraction_1:
             fractional_binary += "1"
-            fractional_part -= 1
+            fractional_part_int -= fraction_1
         else:
             fractional_binary += "0"
+        i+=1
+    # while fractional_part != 0:
+    #     fractional_part *= 2
+    #     if fractional_part >= 1:
+    #         fractional_binary += "1"
+    #         fractional_part -= 1
+    #     else:
+    #         fractional_binary += "0"
     
     exponent = 0 # len(integer_binary) - 1 # LOOK OVER HERE
     
