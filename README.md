@@ -43,6 +43,7 @@ The program supports the following special cases:
 
 - Positive Zero
 - Negative Zero
+- Denormalized Numbers
 - Positive Infinity
 - Negative Infinity
 - Quiet NaN
