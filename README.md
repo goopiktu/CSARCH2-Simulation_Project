@@ -37,17 +37,6 @@ This program is an IEEE-754 Binary-128 floating-point converter that takes both 
 10. To enter negative numbers, use the "-" button before the number.
 11. To switch between decimal and binary input modes, select the corresponding radio button.
 
-## Rounding Method
-
-The program provides options for the user to choose the rounding method for inputs with more than 34 digits. The available rounding methods are:
-
-- Round to nearest
-- Round towards zero
-- Round towards positive infinity
-- Round towards negative infinity
-
-To select a rounding method, use the corresponding option provided in the program interface.
-
 ## Special Cases
 
 The program supports the following special cases:
