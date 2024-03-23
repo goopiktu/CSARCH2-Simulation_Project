@@ -221,8 +221,7 @@ def normalize_form(complete_form):
 
     if (complete_form[0].find("1") == -1): # if left side of the dot is only 0s
         first_one = complete_form[2].find("1")
-        count = len(complete_form[2]) - first_one
-        for i in range(count):
+        for i in range(first_one+1):
             first_char = complete_form[2][0]
             complete_form[2] = complete_form[2][1:]
             complete_form[6] = str(int(complete_form[6]) - 1)
