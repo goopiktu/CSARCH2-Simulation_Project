@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox, filedialog
 import re
 
 # Start of GUI
@@ -47,7 +48,7 @@ input_frame = Frame(main_frame)
 input_frame.grid(row=2, column=0, columnspan=4, sticky="ew")
 input_label = Label(input_frame, text="Input Window", font=("Helvetica", 12))
 input_label.pack()
-e = Text(input_frame, width=128, height=4, font=("Helvetica", 12), state="disabled")
+e = Text(input_frame, width=144, height=4, font=("Helvetica", 12), state="disabled")
 e.pack(padx=5, pady=5)
 
 # Frame for output
@@ -55,8 +56,28 @@ output_frame = Frame(main_frame)
 output_frame.grid(row=3, column=0, columnspan=4, sticky="ew")
 output_label = Label(output_frame, text="Output Window", font=("Helvetica", 12))
 output_label.pack()
-output_text = Text(output_frame, width=128, height=8, font=("Helvetica", 12), state="disabled")
+output_text = Text(output_frame, width=144, height=8, font=("Helvetica", 12), state="disabled")
 output_text.pack(padx=5, pady=5)
+
+# Frame for save button
+save_frame = Frame(main_frame)
+save_frame.grid(row=5, column=0, columnspan=4, sticky="ew")
+
+save_button = Button(save_frame, text="Save Result to .txt", command=lambda: save_result(output_text), font=("Helvetica", 12), state="disabled")
+save_button.pack(pady=10)
+
+def save_result(output_widget):
+    """Saves the content of the output widget to a file."""
+    result = output_widget.get(1.0, "end").strip()
+    if result:
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt",
+                                                 filetypes=[("Text Files", ".txt"), ("All Files", ".*")])
+        if file_path:
+            with open(file_path, "w") as file:
+                file.write(result)
+            messagebox.showinfo("Save Result", "Result saved successfully.")
+        else:
+            messagebox.showwarning("Save Result", "Result not saved.")
 
 # Frame for buttons
 button_frame = Frame(main_frame)
@@ -86,6 +107,12 @@ for y in range(4):
 # End of GUI
 
 # Functions
+    
+def toggle_save_button():
+    if output_text.get(1.0, "end").strip():
+        save_button.config(state="normal")
+    else:
+        save_button.config(state="disabled")
 
 def button_click(text):
     if text == "Clear":
@@ -106,6 +133,7 @@ def clear():
     output_text.configure(state="normal")
     output_text.delete(1.0, END)
     output_text.configure(state="disabled")
+    save_button.config(state="disabled")
 
 def backspace():
     e.configure(state="normal")
@@ -157,11 +185,13 @@ def equal():
         output_text.delete(1.0, END)
         output_text.insert(1.0, formatted_result)
         output_text.configure(state="disabled")
+        toggle_save_button()
     except Exception as ex:
         output_text.configure(state="normal")
         output_text.delete(1.0, END)
         output_text.insert(1.0, f"Error: {str(ex)}")
         output_text.configure(state="disabled")
+        toggle_save_button()
 
 # IEEE-754 Binary-128 Floating Point Converter Code
 
@@ -313,8 +343,8 @@ def main(numbers, inputInBinary=True):
         result["sign"] = sign(split[0])
         result["exponent"] = ex
         result["fraction"] = frac
-        result["complete"] = f'{result["sign"]}{result["exponent"]}{result["fraction"]}'
-        result["hex_complete"] = hex(int(result["complete"], 2))
+        result["complete"] = f'{result["sign"]} {result["exponent"]} {result["fraction"]}'
+        result["hex_complete"] = hex(int(result["complete"].replace(" ", ""), 2))
 
     return result
 
